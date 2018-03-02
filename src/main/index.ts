@@ -1,4 +1,5 @@
 import { app, BrowserWindow } from 'electron';
+import * as tray from './tray';
 
 let mainWindow: BrowserWindow | null;
 
@@ -12,8 +13,8 @@ function createWindow() : void {
   mainWindow = new BrowserWindow({width: 800, height: 600})
   mainWindow.loadURL('https://mail.google.com/mail/u/0/#inbox');
 
-  // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  // Configure tray icon.
+  tray.create(mainWindow);
 
   // Emitted when the window is closed.
   mainWindow.on('closed', onClosed);

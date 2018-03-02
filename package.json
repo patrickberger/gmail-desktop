@@ -1,18 +1,36 @@
 {
   "name": "gmail-desktop",
+  "description": "Simple Google Mail Wrapper for Desktop",
   "version": "0.2.0",
-  "main": "src/main.ts",
-  "author": "Patrick Berger",
+  "homepage": "https://github.com/patrickberger/gmail-desktop",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/patrickberger/gmail-desktop.git"
+  },
+  "author": {
+    "name": "Patrick Berger",
+    "email": "pb@patrickberger.org",
+    "url": "https://github.com/patrickberger"
+  },
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
-    "lint": "tslint -c tslint.json -p tsconfig.json",
-    "start": "yarn run build && electron ./dist/main.js"
+    "dev": "electron-webpack dev",
+    "compile": "electron-webpack",
+    "dist": "yarn compile && electron-builder",
+    "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
+  },
+  "dependencies": {
+    "source-map-support": "^0.5.3"
   },
   "devDependencies": {
-    "electron": "^1.8.2",
-    "electron-builder": "^20.2.0",
-    "ts-lint": "^4.5.1",
-    "typescript": "^2.7.2"
+    "electron": "1.8.2",
+    "electron-builder": "^20.0.6",
+    "electron-webpack": "^1.13.0",
+    "electron-webpack-ts": "^1.4.0",
+    "typescript": "^2.7.2",
+    "webpack": "^3.11.0"
+  },
+  "resolutions": {
+    "webpack-sources": "1.0.1"
   }
 }

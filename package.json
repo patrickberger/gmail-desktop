@@ -36,9 +36,11 @@
     "electron-builder": "^20.0.6",
     "electron-webpack": "^1.13.0",
     "electron-webpack-ts": "^1.4.0",
+    "electron-webpack-vue": "^1.4.0",
     "tslint": "^5.9.1",
     "tslint-loader": "^3.6.0",
     "typescript": "^2.7.2",
+    "vue": "^2.5.13",
     "webpack": "^3.11.0"
   },
   "resolutions": {

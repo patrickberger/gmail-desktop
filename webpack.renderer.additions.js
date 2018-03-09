@@ -18,7 +18,7 @@ module.exports = {
     ]
   },
   plugins: [
-    new HtmlWebpackPlugin({ // 
+    new HtmlWebpackPlugin({
       title: "Gmail Desktop",
       template: "src/renderer/index.ejs",
       hash: true

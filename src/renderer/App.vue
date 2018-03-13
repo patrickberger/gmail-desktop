@@ -1,6 +1,10 @@
 <template>
-    <webview id="wrapper" src="https://mail.google.com/mail/u/0/#inbox" :preload="preload" nodeintegration disablewebsecurity />
+    <webview id="wrapper" src="https://mail.google.com/mail/u/0/#inbox" :preload="preload" webpreferences="webSecurity=false" />
 </template>
+
+<style lang="less">
+  html, body, #wrapper { height: 100% !important; margin: 0; padding: 0; }
+</style>
 
 <script type="ts">
 

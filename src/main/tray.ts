@@ -2,7 +2,8 @@ import { app, BrowserWindow, Menu, MenuItemConstructorOptions, Tray } from 'elec
 import * as path from 'path';
 
 declare var __static: any;
-const trayIconFile = path.join(__static, 'tray-icon.png');
+const defaultTrayIcon: string = path.join(__static, 'tray-icon-default.png');
+const unreadTrayIcon: string = path.join(__static, 'tray-icon-unread.png');
 
 let trayIcon: Tray | null;
 
@@ -25,12 +26,21 @@ function createContextMenu(win: BrowserWindow): MenuItemConstructorOptions[] {
 
 export function create(win: BrowserWindow): void {
 
-  trayIcon = new Tray(trayIconFile);
+  trayIcon = new Tray(defaultTrayIcon);
   trayIcon.setTitle(app.getName());
   trayIcon.setToolTip(app.getName());
   trayIcon.setContextMenu(Menu.buildFromTemplate(createContextMenu(win)));
 
   // Events.
   trayIcon.on('click', () => toggleWindow(win));
+
+}
+
+export function markUnread(hasUnread?: boolean): void {
+
+  if (!trayIcon) { return; }
+
+  const hasUnreadMails = hasUnread || false;
+  trayIcon.setImage(hasUnreadMails ? unreadTrayIcon : defaultTrayIcon);
 
 }

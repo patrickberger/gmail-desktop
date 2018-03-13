@@ -2,7 +2,7 @@
   "name": "gmail-desktop",
   "productName": "Gmail Desktop",
   "description": "Simple Google Mail Wrapper for Desktop",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "homepage": "https://github.com/patrickberger/gmail-desktop",
   "repository": {
     "type": "git",
@@ -37,6 +37,8 @@
     "electron-webpack": "^1.13.0",
     "electron-webpack-ts": "^1.4.0",
     "electron-webpack-vue": "^1.4.0",
+    "less": "^3.0.1",
+    "less-loader": "^4.1.0",
     "tslint": "^5.9.1",
     "tslint-loader": "^3.6.0",
     "typescript": "^2.7.2",

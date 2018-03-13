@@ -1,12 +1,15 @@
-import { app, BrowserWindow, BrowserWindowConstructorOptions } from 'electron';
+import { app, BrowserWindow, BrowserWindowConstructorOptions, ipcMain as ipc, IpcMessageEvent } from 'electron';
 import * as path from 'path';
 import { format as formatUrl } from 'url';
+import * as util from 'util';
 import * as appMenu from './app-menu';
+import * as notifier from './notifier';
 import * as tray from './tray';
 
+declare var __static: any;
 const isDevelopment = process.env.NODE_ENV !== 'production';
-
 let mainWindow: BrowserWindow | null;
+let forceQuit: boolean = false;
 
 function onClosed(): void {
   mainWindow = null;
@@ -17,6 +20,8 @@ function createWindowConfig(): BrowserWindowConstructorOptions {
   // Create window configuration.
   const config: BrowserWindowConstructorOptions = {
     height: 600,
+    icon: path.join(__static, 'tray-icon-default.png'),
+    title: 'Gmail Desktop',
     width: 800,
   };
 
@@ -50,10 +55,26 @@ function createWindow(): void {
   appMenu.create(mainWindow);
   tray.create(mainWindow);
 
+  // Emitted when the user is attempting to close the window.
+  // Instead of closing the application: Just minimize it.
+  mainWindow.on('close', (e: Event) => {
+    if (forceQuit) { return; }
+
+    e.preventDefault();
+    if (mainWindow) { mainWindow.hide(); }
+
+  });
+
   // Emitted when the window is closed.
   mainWindow.on('closed', onClosed);
 
 }
+
+// 'activate' is emitted when the user clicks the Dock icon (OS X).
+app.on('activate', () => { if (mainWindow) { mainWindow.show(); }});
+
+// 'before-quit' is emitted when Electron receives the signal to exit and wants to start closing windows.
+app.on('before-quit', () => forceQuit = true);
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -62,4 +83,27 @@ app.on('ready', createWindow);
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') { app.quit(); }
+});
+
+/*********
+ * IPC.
+ *********/
+
+// Unread inbox count changes.
+ipc.on('unread-count-changed', (e: IpcMessageEvent, ...args: any[]): void => {
+
+  // Get number of messages.
+  const count: number = args[0] ? args[0] : 0;
+  tray.markUnread(count > 0);
+  notifier.notifyUnread(count);
+
+});
+
+// Gmail has been connected.
+ipc.on('gmail-initialized', (e: IpcMessageEvent, ...args: any[]): void => {
+
+  // Do some initial setup.
+  const userEmail: string = args[0] ? args[0] : '<unknown>';
+  if (mainWindow) { mainWindow.setTitle(util.format('%s | Gmail Desktop', userEmail)); }
+
 });

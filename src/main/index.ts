@@ -2,14 +2,15 @@ import { app, BrowserWindow, BrowserWindowConstructorOptions, ipcMain as ipc, Ip
 import * as path from 'path';
 import { format as formatUrl } from 'url';
 import * as util from 'util';
-import * as appMenu from './app-menu';
-import * as notifier from './notifier';
-import * as tray from './tray';
+import { ApplicationTray } from './application-tray';
+import { MenuUtility } from './menu-utility';
+import { Notifier } from './notifier';
 
 declare var __static: any;
 const isDevelopment = process.env.NODE_ENV !== 'production';
 let mainWindow: BrowserWindow | null;
 let forceQuit: boolean = false;
+let tray: ApplicationTray | null;
 
 function onClosed(): void {
   mainWindow = null;
@@ -52,8 +53,8 @@ function createWindow(): void {
   }
 
   // Configure menue and tray icon.
-  appMenu.create(mainWindow);
-  tray.create(mainWindow);
+  MenuUtility.initialize(mainWindow);
+  tray = new ApplicationTray(mainWindow);
 
   // Emitted when the user is attempting to close the window.
   // Instead of closing the application: Just minimize it.
@@ -94,8 +95,8 @@ ipc.on('unread-count-changed', (e: IpcMessageEvent, ...args: any[]): void => {
 
   // Get number of messages.
   const count: number = args[0] ? args[0] : 0;
-  tray.markUnread(count > 0);
-  notifier.notifyUnread(count);
+  if (tray) { tray.markUnread(count > 0); }
+  Notifier.notifyUnread(count);
 
 });
 
@@ -105,5 +106,6 @@ ipc.on('gmail-initialized', (e: IpcMessageEvent, ...args: any[]): void => {
   // Do some initial setup.
   const userEmail: string = args[0] ? args[0] : '<unknown>';
   if (mainWindow) { mainWindow.setTitle(util.format('%s | Gmail Desktop', userEmail)); }
+  if (tray) { tray.setUserEmail(userEmail); }
 
 });

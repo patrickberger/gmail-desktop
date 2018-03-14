@@ -3,10 +3,41 @@ import { BrowserWindow, Menu, MenuItemConstructorOptions, shell } from 'electron
 // tslint:disable-next-line:no-var-requires
 const constants = require('./constants.json');
 
-export function create(win: BrowserWindow) {
+/**
+ * Application menu.
+ *
+ * @export
+ * @class ApplicationMenu
+ */
+export class MenuUtility {
 
-  // Create a very basic menue.
-  const template: MenuItemConstructorOptions[] = [
+  /**
+   * Applies the application menu to specified window.
+   *
+   * @static
+   * @param {BrowserWindow} win The browser window instance.
+   * @memberof MenuUtility
+   */
+  public static initialize(win: BrowserWindow): void {
+
+    const template = MenuUtility.createTemplate();
+    const menu = Menu.buildFromTemplate(template);
+    win.setMenu(menu);
+
+  }
+
+  /**
+   * Creates the menu template.
+   *
+   * @private
+   * @static
+   * @returns {MenuItemConstructorOptions[]}
+   * @memberof MenuUtility
+   */
+  private static createTemplate(): MenuItemConstructorOptions[] {
+
+    // Create a very basic menue.
+    const template: MenuItemConstructorOptions[] = [
       {
         label: 'File',
         submenu: [
@@ -33,9 +64,9 @@ export function create(win: BrowserWindow) {
         ],
       },
     ];
-  const appMenu = Menu.buildFromTemplate(template);
 
-  // Apply menue.
-  win.setMenu(appMenu);
+    return template;
+
+  }
 
 }

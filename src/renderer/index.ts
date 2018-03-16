@@ -54,6 +54,10 @@ onload = () => {
 
 };
 
+ipc.on('open-wrapper-devtools', () => {
+  if (wrapper) { wrapper.openDevTools(); }
+});
+
 // Vue.
 import App from '@/App.vue';
 import Vue from 'vue';

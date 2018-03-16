@@ -1,3 +1,6 @@
+const pkg = require(__dirname + '/package.json');
+const webpack = require('webpack');
+
 module.exports = {
 
   module: {
@@ -12,6 +15,13 @@ module.exports = {
         }
       },
     ]
-  }
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      'APP_VERSION': JSON.stringify(pkg.version),
+      'APP_HOMEPAGE': JSON.stringify(pkg.homepage),
+      'APP_PRODUCTNAME': JSON.stringify(pkg.productName)
+    })
+  ]
 
 }

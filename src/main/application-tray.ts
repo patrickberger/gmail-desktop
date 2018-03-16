@@ -16,12 +16,18 @@ export class ApplicationTray {
    */
   public static createContextMenu(win: BrowserWindow): MenuItemConstructorOptions[] {
 
+    const appNameAndVersion: string = util.format('%s %s', `${APP_PRODUCTNAME}`, `${APP_VERSION}`);
+
     return [
+      {
+        enabled: false,
+        label: appNameAndVersion,
+      },
+      { type: 'separator' },
       {
         click: () => { ApplicationTray.toggleWindow(win); },
         label: 'Toggle Window',
       },
-      { type: 'separator' },
       { role: 'quit' },
     ];
 

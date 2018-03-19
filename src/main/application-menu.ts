@@ -1,5 +1,6 @@
-import { BrowserWindow, Menu, MenuItemConstructorOptions, shell } from 'electron';
+import { app, BrowserWindow, Menu, MenuItem, MenuItemConstructorOptions, shell } from 'electron';
 import * as util from 'util';
+import { GmailDesktop } from './gmail-desktop';
 
 /**
  * Application menu.
@@ -7,7 +8,16 @@ import * as util from 'util';
  * @export
  * @class ApplicationMenu
  */
-export class MenuUtility {
+export class ApplicationMenu {
+
+  private readonly gmailApp: GmailDesktop;
+
+  constructor(gmailApp: GmailDesktop) {
+
+    this.gmailApp = gmailApp;
+    this.initialize(this.gmailApp.getMainWindow());
+
+  }
 
   /**
    * Applies the application menu to specified window.
@@ -16,9 +26,9 @@ export class MenuUtility {
    * @param {BrowserWindow} win The browser window instance.
    * @memberof MenuUtility
    */
-  public static initialize(win: BrowserWindow): void {
+  public initialize(win: BrowserWindow): void {
 
-    const template = MenuUtility.createTemplate();
+    const template = this.createTemplate();
     const menu = Menu.buildFromTemplate(template);
     win.setMenu(menu);
 
@@ -28,20 +38,32 @@ export class MenuUtility {
    * Creates the menu template.
    *
    * @private
-   * @static
    * @returns {MenuItemConstructorOptions[]}
    * @memberof MenuUtility
    */
-  private static createTemplate(): MenuItemConstructorOptions[] {
+  private createTemplate(): MenuItemConstructorOptions[] {
 
     // Create a very basic menue.
     const appNameAndVersion: string = util.format('%s %s', `${APP_PRODUCTNAME}`, `${APP_VERSION}`);
     const homepage: string = `${APP_HOMEPAGE}`;
+    const isAutostartEnabled = (!GmailDesktop.IsDevelopment) && this.gmailApp.getConfig().get('autostart');
     const template: MenuItemConstructorOptions[] = [
       {
         label: 'File',
         submenu: [
           { role: 'quit' },
+        ],
+      },
+      {
+        label: 'Options',
+        submenu: [
+          {
+            checked: isAutostartEnabled,
+            click: this.handleAutostartClick.bind(this),
+            enabled: !GmailDesktop.IsDevelopment,
+            label: 'Enable Autostart',
+            type: 'checkbox',
+          },
         ],
       },
       {
@@ -71,6 +93,27 @@ export class MenuUtility {
     ];
 
     return template;
+
+  }
+
+  /**
+   * Handles the Options > Enable Autostart menu item click.
+   *
+   * @private
+   * @param {MenuItem} item The source menu item.
+   * @param {BrowserWindow} focusedWindow The currently focused window.
+   * @memberof ApplicationMenu
+   */
+  private handleAutostartClick(item: MenuItem, focusedWindow: BrowserWindow): void {
+
+    // @see https://electronjs.org/docs/api/app#appsetloginitemsettingssettings-macos-windows
+    app.setLoginItemSettings({
+      openAsHidden: false,
+      openAtLogin: item.checked,
+    });
+
+    // Update configuration.
+    this.gmailApp.getConfig().set('autostart', item.checked);
 
   }
 

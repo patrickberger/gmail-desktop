@@ -3,8 +3,9 @@ import { EventEmitter } from 'events';
 import * as path from 'path';
 import * as url from 'url';
 import * as util from 'util';
+import { ApplicationMenu } from './application-menu';
 import { ApplicationTray } from './application-tray';
-import { MenuUtility } from './menu-utility';
+import { Config } from './config';
 import { Notifier } from './notifier';
 
 /**
@@ -23,27 +24,8 @@ export class GmailDesktop extends EventEmitter {
 
   public static IsDevelopment: boolean = process.env.NODE_ENV !== 'production';
 
-  /**
-   * Creates and returns the options for the main window.
-   *
-   * @private @static
-   * @returns {BrowserWindowConstructorOptions}
-   * @memberof GmailDesktop
-   */
-  private static createWindowOptions(): BrowserWindowConstructorOptions {
-
-    // Create window configuration.
-    const config: BrowserWindowConstructorOptions = {
-      height: 600,
-      icon: path.join(__static, 'tray-icon-default.png'),
-      title: `${APP_PRODUCTNAME}`,
-      width: 800,
-    };
-
-    // Done.
-    return config;
-
-  }
+  /** The application config. */
+  private config: Config = new Config();
 
   /** Indicates wether to force quitting or simpliy minimizing the application. */
   private forceQuit: boolean = false;
@@ -71,11 +53,8 @@ export class GmailDesktop extends EventEmitter {
     // Create and initialize the main window.
     this.window = this.createWindow();
     this.tray = new ApplicationTray(this.window);
-    MenuUtility.initialize(this.window);
 
     // Wire up app and window events.
-    // 'activate' is emitted when the user clicks the Dock icon (OS X).
-    app.on('activate', () => this.window.show());
     // 'before-quit' is emitted when Electron receives the signal to exit and wants to start closing windows.
     app.on('before-quit', () => this.forceQuit = true);
     this.window.on('close', this.onClose.bind(this));
@@ -84,11 +63,34 @@ export class GmailDesktop extends EventEmitter {
   }
 
   /**
+   * Gets the app configuration object.
+   *
+   * @returns {Config} The app configuration.
+   * @memberof GmailDesktop
+   */
+  public getConfig(): Config {
+    return this.config;
+  }
+
+  /**
+   * Gets the main window.
+   *
+   * @returns {BrowserWindow} The application's main window.
+   * @memberof GmailDesktop
+   */
+  public getMainWindow(): BrowserWindow {
+    return this.window;
+  }
+
+  /**
    * Opens the browser window.
    *
    * @memberof GmailDesktop
    */
   public openWindow(): void {
+
+    // tslint:disable-next-line:no-unused-expression
+    new ApplicationMenu(this);
 
     if (GmailDesktop.IsDevelopment) {
 
@@ -152,11 +154,32 @@ export class GmailDesktop extends EventEmitter {
   private createWindow(): BrowserWindow {
 
     // Create a window instance ...
-    const options = GmailDesktop.createWindowOptions();
+    const options = this.createWindowOptions();
     const window = new BrowserWindow(options);
 
     // ... and return the result.
     return window;
+
+  }
+
+  /**
+   * Creates and returns the options for the main window.
+   *
+   * @private
+   * @returns {BrowserWindowConstructorOptions}
+   * @memberof GmailDesktop
+   */
+  private createWindowOptions(): BrowserWindowConstructorOptions {
+
+    // Create window configuration.
+    const config: BrowserWindowConstructorOptions = {
+      icon: path.join(__static, 'tray-icon-default.png'),
+      title: `${APP_PRODUCTNAME}`,
+    };
+    this.config.addMainWindowConfiguration(config);
+
+    // Done.
+    return config;
 
   }
 
@@ -169,6 +192,10 @@ export class GmailDesktop extends EventEmitter {
    * @memberof GmailDesktop
    */
   private onClose(e: Event): void {
+
+    // Update user configuration.
+    const windowBounds = this.window.getBounds();
+    this.config.setWindowBounds(windowBounds);
 
     // Stop here if quitting the application is intended.
     if (this.forceQuit) { return; }

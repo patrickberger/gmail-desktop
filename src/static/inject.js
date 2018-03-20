@@ -6,7 +6,7 @@ let gmail = null;
 window.onload = function() {
 
   // Inject jquery and Gmail.js into current webview.
-  window.$ = window.jQuery = require(path.resolve(__dirname, 'jquery-3.3.1.min.js'));
+  window.$ = window.jQuery = require(path.resolve(__dirname, 'jquery.min.js'));
   const GmailFactory = require(path.resolve(__dirname, 'gmail.js'));
   gmail = GmailFactory.Gmail(window.$);
   window.gmail = gmail;

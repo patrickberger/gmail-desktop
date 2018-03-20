@@ -12,6 +12,7 @@ export class Config {
   /** Default options object. */
   private static readonly defaultOptions = {
     autostart: false,
+    startMinimized: false,
     window: {
       height: 600,
       width: 800,
@@ -51,6 +52,7 @@ export class Config {
 
     config.height = this.get('window.height');
     config.width = this.get('window.width');
+    config.show = !this.get('startMinimized');
 
   }
 
@@ -89,11 +91,10 @@ export class Config {
    */
   public setWindowBounds(bounds: Rectangle): Config {
 
-    this
+    return this
       .set('window.height', bounds.height)
       .set('window.width', bounds.width);
 
-    return this;
   }
 
 }

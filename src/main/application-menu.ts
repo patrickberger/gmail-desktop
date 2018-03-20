@@ -47,6 +47,8 @@ export class ApplicationMenu {
     const appNameAndVersion: string = util.format('%s %s', `${APP_PRODUCTNAME}`, `${APP_VERSION}`);
     const homepage: string = `${APP_HOMEPAGE}`;
     const isAutostartEnabled = (!GmailDesktop.IsDevelopment) && this.gmailApp.getConfig().get('autostart');
+    const isStartingMinimized = this.gmailApp.getConfig().get('startMinimized');
+
     const template: MenuItemConstructorOptions[] = [
       {
         label: 'File',
@@ -62,6 +64,12 @@ export class ApplicationMenu {
             click: this.handleAutostartClick.bind(this),
             enabled: !GmailDesktop.IsDevelopment,
             label: 'Enable Autostart',
+            type: 'checkbox',
+          },
+          {
+            checked: isStartingMinimized,
+            click: this.handleStartMinimizedClick.bind(this),
+            label: 'Start minimized',
             type: 'checkbox',
           },
         ],
@@ -114,6 +122,21 @@ export class ApplicationMenu {
 
     // Update configuration.
     this.gmailApp.getConfig().set('autostart', item.checked);
+
+  }
+
+  /**
+   * Handles the Options > Enable Autostart menu item click.
+   *
+   * @private
+   * @param {MenuItem} item The source menu item.
+   * @param {BrowserWindow} focusedWindow The currently focused window.
+   * @memberof ApplicationMenu
+   */
+  private handleStartMinimizedClick(item: MenuItem, focusedWindow: BrowserWindow): void {
+
+    // Update configuration.
+    this.gmailApp.getConfig().set('startMinimized', item.checked);
 
   }
 

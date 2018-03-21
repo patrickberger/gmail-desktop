@@ -2,7 +2,7 @@
   "name": "gmail-desktop",
   "productName": "Gmail Desktop",
   "description": "Simple Google Mail Wrapper for Desktop",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "homepage": "https://github.com/patrickberger/gmail-desktop",
   "repository": {
     "type": "git",
@@ -15,9 +15,10 @@
   },
   "license": "MIT",
   "scripts": {
-    "dev": "electron-webpack dev",
+    "clean": "rimraf dist installer static",
     "compile": "electron-webpack",
-    "dist": "yarn compile && electron-builder",
+    "dev": "electron-webpack dev",
+    "dist": "yarn clean && yarn compile && electron-builder",
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
   },
   "electronWebpack": {
@@ -46,6 +47,7 @@
     "less": "^3.0.1",
     "less-loader": "^4.1.0",
     "query": "^0.2.0",
+    "rimraf": "^2.6.2",
     "tslint": "^5.9.1",
     "tslint-loader": "^3.6.0",
     "typescript": "^2.7.2",

@@ -30,6 +30,9 @@ export class GmailDesktop extends EventEmitter {
   /** Indicates wether to force quitting or simpliy minimizing the application. */
   private forceQuit: boolean = false;
 
+  /** The notifier. */
+  private notifier: Notifier;
+
   /** The tray icon. */
   private tray: ApplicationTray;
 
@@ -52,6 +55,7 @@ export class GmailDesktop extends EventEmitter {
 
     // Create and initialize the main window.
     this.window = this.createWindow();
+    this.notifier = new Notifier();
     this.tray = new ApplicationTray(this.window);
 
     // Wire up app and window events.
@@ -119,7 +123,7 @@ export class GmailDesktop extends EventEmitter {
 
     this.unreadMessages = unreadMessages;
     this.tray.markUnread(this.unreadMessages > 0);
-    Notifier.notifyUnread(this.unreadMessages);
+    this.notifier.notifyUnread(this.unreadMessages);
 
     // Done.
     return this;

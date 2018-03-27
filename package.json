@@ -2,7 +2,7 @@
   "name": "gmail-desktop",
   "productName": "Gmail Desktop",
   "description": "Simple Google Mail Wrapper for Desktop",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "homepage": "https://github.com/patrickberger/gmail-desktop",
   "repository": {
     "type": "git",

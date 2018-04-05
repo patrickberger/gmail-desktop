@@ -13,6 +13,12 @@ window.onload = function() {
 
   // Event handler.
   const unreadCheckHander = function () {
+    // On marked read, unread, deletion; notify inbox unread count might have changed.
+    ipc.sendToHost('unread-count-changed');
+  };
+  const newMailHandler = function () {
+    // On new mail: Notify about it; notify inbox unread count might have changed.
+    ipc.sendToHost('new-mail');
     ipc.sendToHost('unread-count-changed');
   };
 

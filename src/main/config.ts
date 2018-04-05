@@ -12,6 +12,7 @@ export class Config {
   /** Default options object. */
   private static readonly defaultOptions = {
     autostart: false,
+    enableNotifications: false,
     startMinimized: false,
     window: {
       height: 600,
@@ -80,6 +81,16 @@ export class Config {
     this.store.set(key, value);
     return this;
 
+  }
+
+  /**
+   * Gets a value indicating whether notifications are enabled.
+   *
+   * @returns {boolean} True if the application should notify.
+   * @memberof Config
+   */
+  public getIsNotificationsEnabled(): boolean {
+    return this.get('enableNotifications');
   }
 
   /**

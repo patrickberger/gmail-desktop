@@ -47,6 +47,7 @@ export class ApplicationMenu {
     const appNameAndVersion: string = util.format('%s %s', `${APP_PRODUCTNAME}`, `${APP_VERSION}`);
     const homepage: string = `${APP_HOMEPAGE}`;
     const isAutostartEnabled = (!GmailDesktop.IsDevelopment) && this.gmailApp.getConfig().get('autostart');
+    const isNotificationsEnabled = this.gmailApp.getConfig().get('enableNotifications');
     const isStartingMinimized = this.gmailApp.getConfig().get('startMinimized');
 
     const template: MenuItemConstructorOptions[] = [
@@ -59,6 +60,12 @@ export class ApplicationMenu {
       {
         label: 'Options',
         submenu: [
+          {
+            checked: isNotificationsEnabled,
+            click: this.handleEnableNotificationsClick.bind(this),
+            label: 'Enable Notifications',
+            type: 'checkbox',
+          },
           {
             checked: isAutostartEnabled,
             click: this.handleAutostartClick.bind(this),
@@ -122,6 +129,21 @@ export class ApplicationMenu {
 
     // Update configuration.
     this.gmailApp.getConfig().set('autostart', item.checked);
+
+  }
+
+  /**
+   * Handles the Options > Enable Notifications menu item click.
+   *
+   * @private
+   * @param {MenuItem} item The source menu item.
+   * @param {BrowserWindow} focusedWindow The currently focused window.
+   * @memberof ApplicationMenu
+   */
+  private handleEnableNotificationsClick(item: MenuItem, focusedWindow: BrowserWindow): void {
+
+    // Update configuration.
+    this.gmailApp.getConfig().set('enableNotifications', item.checked);
 
   }
 

@@ -40,9 +40,6 @@ export class Notifier {
   private static readonly defaultMessageIcon: string = path.join(__static, 'notification-icon-default.png');
   private static readonly unreadMessagesIcon: string = path.join(__static, 'notification-icon-unread.png');
 
-  /** The number of currently unread messages. */
-  private unreadCount: number = 0;
-
   /**
    * Creates and shows a notifications about unread messages.
    *
@@ -53,14 +50,9 @@ export class Notifier {
    */
   public notifyUnread(count: number): void {
 
-    const currentUnreadCount = this.unreadCount;
-    this.unreadCount = count;
-
     // No message if
     // - there is nothing unread
-    // - unread messages count decreased.
     if (count <= 0) { return; }
-    if (count <= currentUnreadCount) { return; }
 
     // Prepare message and go.
     const message = util.format((count > 1 ? '%d unread messages.' : '%d unread message.'), count);

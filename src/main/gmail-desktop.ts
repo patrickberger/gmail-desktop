@@ -123,7 +123,22 @@ export class GmailDesktop extends EventEmitter {
 
     this.unreadMessages = unreadMessages;
     this.tray.markUnread(this.unreadMessages > 0);
-    this.notifier.notifyUnread(this.unreadMessages);
+
+    // Done.
+    return this;
+
+  }
+
+  /**
+   * Informs the application about a new email.
+   *
+   * @returns {GmailDesktop}
+   * @memberof GmailDesktop
+   */
+  public setHasNewMail(): GmailDesktop {
+
+    const isEnabled = this.getConfig().getIsNotificationsEnabled();
+    if (isEnabled) this.notifier.notifyUnread(this.unreadMessages);
 
     // Done.
     return this;

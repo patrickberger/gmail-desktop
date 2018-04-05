@@ -33,6 +33,14 @@ export default class Main {
 
     });
 
+    ipcMain.on('new-mail', (e: IpcMessageEvent, ...args: any[]): void => {
+
+      // Get number of messages.
+      const count: number = args[0] ? args[0] : 0;
+      if (Main.gmailApp) { Main.gmailApp.setUnreadMessages(count); }
+
+    });
+
     // Gmail has been connected.
     ipcMain.on('gmail-initialized', (e: IpcMessageEvent, ...args: any[]): void => {
 

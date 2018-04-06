@@ -1,4 +1,4 @@
-import { ipcRenderer as ipc, WebviewTag } from 'electron';
+import { ipcRenderer as ipc, shell, WebviewTag } from 'electron';
 
 let wrapper: WebviewTag | null;
 
@@ -13,6 +13,13 @@ onload = () => {
     console.log('Guest logged: "' + e.message + '".');
   });
 
+  // Events.
+  wrapper.addEventListener('new-window', (e) => {
+    // External links do not work by default. Need to handle.
+    shell.openExternal(e.url);
+  });
+
+  // IPC.
   wrapper.addEventListener('ipc-message', (e) => {
     if (!wrapper) { return; }
 

@@ -8,6 +8,9 @@ onload = () => {
   wrapper = document.querySelector('webview#wrapper');
   if (!wrapper) { return; }
 
+  // Attach a (very) basic context menu.
+  require('electron-context-menu')({ window: wrapper });
+
   wrapper.addEventListener('console-message', (e) => {
     // tslint:disable-next-line:no-console
     console.log('Guest logged: "' + e.message + '".');

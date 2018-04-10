@@ -5,13 +5,8 @@
         "output": "installer"
     },
     "win": {
-        "icon": "build/icon.png",
-        "target": "nsis"
-    },
-    "nsis": {
         "artifactName": "${name}-${version}-win-setup.${ext}",
-        "deleteAppDataOnUninstall": true,
-        "oneClick": true
+        "icon": "build/icon.png",
+        "target": "squirrel"
     }
-
 }

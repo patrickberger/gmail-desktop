@@ -6,6 +6,7 @@ import * as util from 'util';
 import { ApplicationMenu } from './application-menu';
 import { ApplicationTray } from './application-tray';
 import { Config } from './config';
+import { Log } from './log';
 import { Notifier } from './notifier';
 
 /**
@@ -52,6 +53,8 @@ export class GmailDesktop extends EventEmitter {
    */
   constructor() {
     super();
+
+    Log.info('Application starting ...');
 
     // Create and initialize the main window.
     this.window = this.createWindow();

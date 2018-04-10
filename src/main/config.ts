@@ -32,9 +32,6 @@ export class Config {
    */
   constructor() {
 
-    // // Ensure user configuration file.
-    // if (!fs.existsSync(this.userFilePath)) { fs.writeFileSync(this.userFilePath, '{}'); }
-
     // Initialize store.
     this.store = new ElectronStore({
       defaults: Config.defaultOptions,

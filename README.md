@@ -1,9 +1,10 @@
-<div align="center">
-  <img src="build/icons/tray-icon-unread.png" />
-  <h1>Gmail Desktop</h1>
-</div>
+# Gmail Desktop
+
+[![dependencies Status](https://david-dm.org/patrickberger/gmail-desktop/status.png)](https://david-dm.org/patrickberger/gmail-desktop) [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.png?v=103)](https://opensource.org/licenses/mit-license.php)
 
 ## Description
+
+![Gmail Desktop app icon](build/icons/tray-icon-unread.png)
 
 This is a simple, unofficial Google Mail wrapper for the desktop. Nothing special so far. This is intended to play around with Electron for educational purposes.
 
@@ -17,6 +18,7 @@ This project is written in [Typescript](http://www.typescriptlang.org/) implemen
 * Tray icon, minimize to tray functionality, see [src/main/application-tray.ts](src/main/application-tray.ts)
 * Main menu including options selection, see [src/main/application-menu.ts](src/main/application-menu.ts)
 * Notifications, see [src/main/notifier.ts](src/main/notifier.ts)
+* Logging using [winston](https://github.com/winstonjs/winston), see [src/main/logger.ts](src/main/logger.ts)
 * Templating using [Vue.js](https://vuejs.org/) and [electron-webpack-vue](https://github.com/electron-userland/electron-webpack)
 
 ## Credits

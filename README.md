@@ -18,7 +18,8 @@ This project is written in [Typescript](http://www.typescriptlang.org/) implemen
 * Tray icon, minimize to tray functionality, see [src/main/application-tray.ts](src/main/application-tray.ts)
 * Main menu including options selection, see [src/main/application-menu.ts](src/main/application-menu.ts)
 * Notifications, see [src/main/notifier.ts](src/main/notifier.ts)
-* Logging using [winston](https://github.com/winstonjs/winston), see [src/main/logger.ts](src/main/logger.ts)
+* Auto updates using [electron-updater](https://yarnpkg.com/en/package/electron-updater), see [src/main/updater.ts](src/main/updater.ts)
+* Logging using [winston](https://github.com/winstonjs/winston), see [src/main/log.ts](src/main/log.ts)
 * Templating using [Vue.js](https://vuejs.org/) and [electron-webpack-vue](https://github.com/electron-userland/electron-webpack)
 
 ## Credits

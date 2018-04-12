@@ -77,6 +77,17 @@ export class Log {
 
   }
 
+  /**
+   * Gets the wrapped logger instance.
+   *
+   * @static
+   * @returns {winston.LoggerInstance}
+   * @memberof Log
+   */
+  public static getLogger(): winston.LoggerInstance {
+    return Log.logger;
+  }
+
   /** Whether this class is already initialized. */
   private static isInitialized: boolean = false;
 

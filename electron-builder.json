@@ -6,7 +6,11 @@
     },
     "win": {
         "artifactName": "${name}-${version}-win-setup.${ext}",
-        "icon": "build/icon.png",
-        "target": "squirrel"
+        "icon": "build/icon.ico",
+        "target": "nsis"
+    },
+    "nsis": {
+      "deleteAppDataOnUninstall": true,
+      "oneClick": true
     }
 }

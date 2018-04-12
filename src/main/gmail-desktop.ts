@@ -6,8 +6,8 @@ import * as util from 'util';
 import { ApplicationMenu } from './application-menu';
 import { ApplicationTray } from './application-tray';
 import { Config } from './config';
-import { Log } from './log';
 import { Notifier } from './notifier';
+import { Updater } from './updater';
 
 /**
  * Main application class.
@@ -40,6 +40,8 @@ export class GmailDesktop extends EventEmitter {
   /** The number of unread messages. */
   private unreadMessages: number = 0;
 
+  private updater: Updater;
+
   /** The logged in user's email address. */
   private userEmail: string = '<unknown>';
 
@@ -54,18 +56,20 @@ export class GmailDesktop extends EventEmitter {
   constructor() {
     super();
 
-    Log.info('Application starting ...');
-
     // Create and initialize the main window.
     this.window = this.createWindow();
     this.notifier = new Notifier();
     this.tray = new ApplicationTray(this.window);
+    this.updater = new Updater();
 
     // Wire up app and window events.
     // 'before-quit' is emitted when Electron receives the signal to exit and wants to start closing windows.
     app.on('before-quit', () => this.forceQuit = true);
     this.window.on('close', this.onClose.bind(this));
     this.window.on('closed', this.onClosed.bind(this));
+
+    // Check for updates.
+    this.updater.check();
 
   }
 
@@ -87,6 +91,16 @@ export class GmailDesktop extends EventEmitter {
    */
   public getMainWindow(): BrowserWindow {
     return this.window;
+  }
+
+  /**
+   * Gets the updater object.
+   *
+   * @returns {Updater}
+   * @memberof GmailDesktop
+   */
+  public getUpdater(): Updater {
+    return this.updater;
   }
 
   /**

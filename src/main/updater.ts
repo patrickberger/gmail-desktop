@@ -1,12 +1,10 @@
 import { AppUpdater, autoUpdater } from 'electron-updater';
 import * as path from 'path';
 import { Log } from './log';
+import { ToastMessenger } from './toast-messenger';
 
-// @see https://gist.github.com/iffy/0ff845e8e3f59dbe7eaf2bf24443f104
-
-// Configure auto updater.
-const logger = Log.getLogger();
-logger.transports.file.level = 'info';
+// Attach logger.
+const logger = Log.getLogger('updater');
 autoUpdater.logger = logger;
 
 if (process.env.NODE_ENV !== 'production') {
@@ -23,17 +21,39 @@ export class Updater {
 
   private autoUpdater: AppUpdater;
 
+  private messenger: ToastMessenger;
+
   /**
    * Creates an instance of Updater.
    * @memberof Updater
    */
-  constructor() {
+  constructor(messenger: ToastMessenger) {
 
     // Initialize.
     this.autoUpdater = autoUpdater;
+    this.messenger = messenger;
 
     // Wire events.
+    // @see https://www.electron.build/auto-update
+    this.autoUpdater.on('checking-for-update', (e, i) => {
+      this.messenger.info('Checking for update.');
+    });
+    this.autoUpdater.on('download-progress', (e, i) => {
+      // tslint:disable-next-line:no-console
+      console.log('autoUpdater: download-progress: ', e, i);
+    });
+    this.autoUpdater.on('update-available', (e, i) => {
+      // tslint:disable-next-line:no-console
+      console.log('autoUpdater: update-available: ', e, i);
+      this.messenger.info('A new version is available. Downloading in background.');
+    });
+    this.autoUpdater.on('update-not-available', (e, i) => {
+      // tslint:disable-next-line:no-console
+      console.log('autoUpdater: update-not-available: ', e, i);
+      this.messenger.info('Your application is up to date.');
+    });
     this.autoUpdater.on('update-downloaded', (e, i) => {
+      this.messenger.info('An update was downloaded.');
       this.quitAndInstall();
     });
 

@@ -6,7 +6,9 @@ import * as util from 'util';
 import { ApplicationMenu } from './application-menu';
 import { ApplicationTray } from './application-tray';
 import { Config } from './config';
+import { Log } from './log';
 import { Notifier } from './notifier';
+import { ToastMessenger } from './toast-messenger';
 import { Updater } from './updater';
 
 /**
@@ -30,6 +32,9 @@ export class GmailDesktop extends EventEmitter {
 
   /** Indicates wether to force quitting or simpliy minimizing the application. */
   private forceQuit: boolean = false;
+
+  /** The window messenger. */
+  private messenger: ToastMessenger;
 
   /** The notifier. */
   private notifier: Notifier;
@@ -56,20 +61,22 @@ export class GmailDesktop extends EventEmitter {
   constructor() {
     super();
 
+    // Hello, world.
+    Log.info('Application startup.');
+
     // Create and initialize the main window.
     this.window = this.createWindow();
     this.notifier = new Notifier();
     this.tray = new ApplicationTray(this.window);
-    this.updater = new Updater();
+    this.messenger = new ToastMessenger(this.window.webContents);
+    this.updater = new Updater(this.messenger);
 
     // Wire up app and window events.
     // 'before-quit' is emitted when Electron receives the signal to exit and wants to start closing windows.
     app.on('before-quit', () => this.forceQuit = true);
     this.window.on('close', this.onClose.bind(this));
     this.window.on('closed', this.onClosed.bind(this));
-
-    // Check for updates.
-    this.updater.check();
+    this.window.on('ready-to-show', this.onReadyToShow.bind(this));
 
   }
 
@@ -210,6 +217,7 @@ export class GmailDesktop extends EventEmitter {
     // Create window configuration.
     const config: BrowserWindowConstructorOptions = {
       icon: path.join(__static, 'tray-icon-default.png'),
+      show: false,
       title: `${APP_PRODUCTNAME}`,
     };
     this.config.addMainWindowConfiguration(config);
@@ -244,6 +252,23 @@ export class GmailDesktop extends EventEmitter {
 
   private onClosed(e: Event): void {
     this.emit('closed');
+  }
+
+  /**
+   * Handles the main window's 'ready-to-show' event.
+   *
+   * @private
+   * @param {Event} e
+   * @memberof GmailDesktop
+   */
+  private onReadyToShow(e: Event): void {
+
+    // Display the window eventually.
+    const showWindow = !this.config.get('startMinimized');
+    if (showWindow) this.window.show();
+
+    // Trigger updater.
+    this.updater.check();
   }
 
 }

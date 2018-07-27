@@ -1,6 +1,7 @@
 import { app, BrowserWindow, Menu, MenuItem, MenuItemConstructorOptions, shell } from 'electron';
 import * as util from 'util';
 import { GmailDesktop } from './gmail-desktop';
+import { ToastMessenger } from './toast-messenger';
 
 /**
  * Application menu.
@@ -12,10 +13,15 @@ export class ApplicationMenu {
 
   private readonly gmailApp: GmailDesktop;
 
+  private readonly messenger: ToastMessenger;
+
   constructor(gmailApp: GmailDesktop) {
 
     this.gmailApp = gmailApp;
-    this.initialize(this.gmailApp.getMainWindow());
+
+    const mainWindow: BrowserWindow = gmailApp.getMainWindow();
+    this.messenger = new ToastMessenger(mainWindow.webContents);
+    this.initialize(mainWindow);
 
   }
 
@@ -49,6 +55,7 @@ export class ApplicationMenu {
     const isAutostartEnabled = (!GmailDesktop.IsDevelopment) && this.gmailApp.getConfig().get('autostart');
     const isNotificationsEnabled = this.gmailApp.getConfig().get('enableNotifications');
     const isStartingMinimized = this.gmailApp.getConfig().get('startMinimized');
+    const messenger = this.messenger;
 
     const template: MenuItemConstructorOptions[] = [
       {
@@ -82,6 +89,32 @@ export class ApplicationMenu {
         ],
       },
       {
+        label: 'Development',
+        submenu: [
+          {
+            accelerator: 'CmdOrCtrl+R',
+            click(item, focusedWindow): void {
+              if (focusedWindow) focusedWindow.reload();
+            },
+            label: 'Reload',
+          },
+          {
+            accelerator: 'CmdOrCtrl+M',
+            click(item, focusedWindow): void {
+              messenger.confirm('Foo bar.');
+            },
+            label: 'Confirmation Toast',
+          },
+          {
+            accelerator: 'CmdOrCtrl+M',
+            click(item, focusedWindow): void {
+              messenger.info('Foo bar.');
+            },
+            label: 'Information Toast',
+          },
+        ],
+      },
+      {
         label: 'Help',
         submenu: [
           {
@@ -94,7 +127,7 @@ export class ApplicationMenu {
             click(item, focusedWindow): void { focusedWindow.webContents.toggleDevTools(); },
             label: 'Developer Tools',
           },
-          {
+           {
             accelerator: process.platform === 'darwin' ? 'Option+Cmd+J' : 'Ctrl+F12',
             click(item, focusedWindow): void { focusedWindow.webContents.send('open-wrapper-devtools'); },
             label: 'Content Developer Tools',

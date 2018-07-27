@@ -1,13 +1,13 @@
 import { app } from 'electron';
+import { configure, getLogger, Logger } from 'log4js';
 import * as path from 'path';
-import * as winston from 'winston';
 
 /**
  * Application logger.
  *
  * @export
  * @class Logger
- * @see https://github.com/winstonjs/winston/tree/2.4.0
+ * @see https://github.com/log4js-node/log4js-node
  */
 export class Log {
 
@@ -20,7 +20,7 @@ export class Log {
    * @memberof Logger
    */
   public static debug(message: string, ...params: any[]): void {
-    Log.logger.log('debug', message, ...params);
+    Log.getLogger().debug(message, ...params);
   }
 
   /**
@@ -32,7 +32,7 @@ export class Log {
    * @memberof Logger
    */
   public static error(message: string, ...params: any[]): void {
-    Log.logger.log('error', message, ...params);
+    Log.getLogger().error(message, ...params);
   }
 
   /**
@@ -44,7 +44,7 @@ export class Log {
    * @memberof Logger
    */
   public static info(message: string, ...params: any[]): void {
-    Log.logger.log('info', message, ...params);
+    Log.getLogger().info(message, ...params);
   }
 
   /**
@@ -56,7 +56,7 @@ export class Log {
    * @memberof Logger
    */
   public static warn(message: string, ...params: any[]): void {
-    Log.logger.log('warn', message, ...params);
+    Log.getLogger().warn(message, ...params);
   }
 
   /**
@@ -66,14 +66,39 @@ export class Log {
    * @memberof Logger
    * @see https://github.com/Microsoft/TypeScript/issues/265#issuecomment-50255298
    */
-  public static initialize() {
+  public static initialize(): void {
 
     // Stop here if already invoked.
     if (Log.isInitialized) return;
     Log.isInitialized = true;
 
-    // Create a logger instance.
-    Log.logger = Log.createLogger();
+    // Configure logger.
+    const userPath = app.getPath('userData');
+    const defaultFilePath: string = path.resolve(userPath, 'gmail-desktop.log');
+    const updaterFilePath: string = path.resolve(userPath, 'gmail-desktop-update.log');
+    configure({
+      appenders: {
+        defaultConsole: { type: 'console' },
+        defaultFile: {
+          backups: 2,
+          compress: true,
+          filename: defaultFilePath,
+          maxLogSize: 1048576, // 1 MB.
+          type: 'file',
+        },
+        uppdateFile: {
+          backups: 1,
+          compress: true,
+          filename: updaterFilePath,
+          maxLogSize: 1048576, // 1 MB.
+          type: 'file',
+        },
+      },
+      categories: {
+        default: { appenders: ['defaultFile', 'defaultConsole'], level: 'info'},
+        updater: { appenders: ['uppdateFile', 'defaultConsole'], level: 'info'},
+      },
+    });
 
   }
 
@@ -81,48 +106,15 @@ export class Log {
    * Gets the wrapped logger instance.
    *
    * @static
-   * @returns {winston.LoggerInstance}
+   * @returns {log4js.Logger}
    * @memberof Log
    */
-  public static getLogger(): winston.LoggerInstance {
-    return Log.logger;
+  public static getLogger(category?: string): Logger {
+    return getLogger(category);
   }
 
   /** Whether this class is already initialized. */
   private static isInitialized: boolean = false;
-
-  /** The logger instance. */
-  private static logger: winston.LoggerInstance;
-
-  /**
-   * Creates a logger instance for this application.
-   *
-   * @private
-   * @static
-   * @returns {winston.LoggerInstance}
-   * @memberof Log
-   */
-  private static createLogger(): winston.LoggerInstance {
-
-    // Create the log targets ...
-    const transports: winston.TransportInstance[] = [];
-    transports.push(new winston.transports.Console());
-    transports.push(new winston.transports.File({
-      filename: path.join(app.getPath('userData'), 'gmail-desktop.log'),
-      handleExceptions: true,
-      humanReadableUnhandledException: true,
-    }));
-
-    // ... create an options object ...
-    const options: winston.LoggerOptions = {
-      level: 'info',
-      transports,
-    };
-
-    // ... create the logger object.
-    return new winston.Logger(options);
-
-  }
 
 }
 

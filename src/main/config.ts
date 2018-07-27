@@ -50,7 +50,7 @@ export class Config {
 
     config.height = this.get('window.height');
     config.width = this.get('window.width');
-    config.show = !this.get('startMinimized');
+    // config.show = !this.get('startMinimized');
 
   }
 

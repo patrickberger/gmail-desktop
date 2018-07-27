@@ -1,4 +1,4 @@
-import { ipcRenderer as ipc, shell, WebviewTag } from 'electron';
+import { IpcMessageEvent, ipcRenderer as ipc, shell, WebviewTag } from 'electron';
 
 let wrapper: WebviewTag | null;
 
@@ -64,13 +64,13 @@ onload = () => {
 
 };
 
-ipc.on('open-wrapper-devtools', () => {
+ipc.on('open-wrapper-devtools', (e: IpcMessageEvent, ...args: any[]): void => {
   if (wrapper) { wrapper.openDevTools(); }
 });
 
 // Vue.
-import App from '@/App.vue';
 import Vue from 'vue';
+import { App } from './app';
 
 new Vue({
   components: { App },
